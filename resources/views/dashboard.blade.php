@@ -34,7 +34,7 @@
     {{-- Hàng nút chức năng --}}
     <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-center max-w-7xl mx-auto">
         <div>
-            <button class="btn w-full py-3 shadow-md bg-red-500 text-white rounded-lg" data-bs-toggle="modal" data-bs-target="#leaveModal">
+            <button class="btn w-full py-3 shadow-md bg-red-500 text-white rounded-lg" data-bs-toggle="modal" data-bs-target="#requestModal">
                 <i class="bi bi-calendar-x text-3xl block"></i> Xin Nghỉ
             </button>
         </div>
@@ -49,7 +49,7 @@
             </button>
         </div>
         <div>
-            <button class="btn w-full py-3 shadow-md bg-blue-500 text-white rounded-lg" data-bs-toggle="modal" data-bs-target="#leaveHistoryModal">
+            <button class="btn w-full py-3 shadow-md bg-blue-500 text-white rounded-lg" data-bs-toggle="modal" data-bs-target="#requestListModal">
                 <i class="bi bi-journal-text text-3xl block"></i> Lịch Sử Nghỉ
             </button>
         </div>
@@ -66,6 +66,85 @@
     </div>
 
     {{-- Các Modal giữ nguyên như bạn đã viết ở trên (có thể thêm border-radius + padding nếu cần) --}}
+
+    <!-- Modal Tạo Đơn Xin Nghỉ -->
+    <div class="modal fade" id="requestModal" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="requestModalLabel">Tạo Đơn Xin nghỉ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('requests.store') }}" method="POST" id="requestForm">
+                        @csrf
+
+                        <div class="mb-3">
+                            <label for="type" class="form-label">Loại Đơn</label>
+                            <select name="type" id="type" class="form-select" required>
+                                <option value="">-- Chọn loại đơn --</option>
+                                <option value="leave">Nghỉ phép</option>
+                                <option value="late">Đi muộn</option>
+                                <option value="remote">Làm việc từ xa</option>
+                                <option value="ot">Tăng ca</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="date" class="form-label">Ngày</label>
+                            <input type="date" name="date" id="date" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="reason" class="form-label">Lý Do</label>
+                            <textarea name="reason" id="reason" class="form-control" rows="3" placeholder="Nhập lý do" required></textarea>
+                        </div>
+
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">Gửi Đơn</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal chứa danh sách đơn -->
+    <div class="modal fade" id="requestListModal" tabindex="-1" aria-labelledby="requestListModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="requestListModalLabel">Danh Sách Đơn Xin Phép</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    @foreach ($requests as $req)
+                        <div class="border rounded p-3 mb-3">
+                            <p><strong>{{ $req->user->name }}</strong> - {{ ucfirst($req->type) }} ngày {{ $req->date }}</p>
+                            <p><strong>Lý do:</strong> {{ $req->reason ?? 'Không có' }}</p>
+                            <p>
+                                <strong>Trạng thái:</strong>
+                                <span class="text-{{ $req->status === 'approved' ? 'success' : ($req->status === 'rejected' ? 'danger' : 'warning') }}">
+                                    {{ ucfirst($req->status) }}
+                                </span>
+                            </p>
+
+                            @if($req->status === 'pending' && auth()->user()->role !== 'employee' && $req->user->role === 'employee')
+                                <form action="{{ route('requests.approve', $req) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button class="btn btn-success btn-sm">Duyệt</button>
+                                </form>
+                                <form action="{{ route('requests.reject', $req) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button class="btn btn-danger btn-sm">Từ chối</button>
+                                </form>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal for OT Request -->
     <div class="modal fade" id="otRequestModal" tabindex="-1" aria-labelledby="otRequestModalLabel" aria-hidden="true">
