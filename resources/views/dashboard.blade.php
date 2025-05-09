@@ -217,7 +217,12 @@
                 if (!res.ok) {
                     const errorText = await res.text();
                     console.error("Lỗi từ server:", errorText);
-                    alert("Có lỗi xảy ra trên server!");
+                    if (res.status === 403) {
+                        // Giải mã Unicode và hiển thị thông báo
+                        alert("Yêu cầu kết nối vào Wifi công ty");  // Hiển thị thông báo sau khi giải mã
+                    } else {
+                        alert("Có lỗi xảy ra trên server!");
+                    }
                     return;
                 }
 
@@ -254,7 +259,12 @@
                 if (!res.ok) {
                     const errorText = await res.text();
                     console.error("Lỗi từ server:", errorText);
-                    alert("Có lỗi xảy ra trên server!");
+                    if (res.status === 403) {
+                        // Giải mã Unicode và hiển thị thông báo
+                        alert("Yêu cầu kết nối vào Wifi công ty");  // Hiển thị thông báo sau khi giải mã
+                    } else {
+                        alert("Có lỗi xảy ra trên server!");
+                    }
                     return;
                 }
 
