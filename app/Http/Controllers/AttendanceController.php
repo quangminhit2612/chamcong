@@ -17,6 +17,14 @@ class AttendanceController extends Controller
 
         \Log::info('Client IP: ' . $userIp);
 
+        // Chặn nếu IP không nằm trong dải 104.28.205.xxx
+        if (
+            $userIp !== '14.241.100.219' &&
+            !str_starts_with($userIp, '104.28.')
+        ) {
+            return response()->json([], 403);
+        }
+
         // Kiểm tra xem người dùng đã chấm công chưa
         $attendance = Attendance::where('user_id', $user->id)->latest()->first();
 
