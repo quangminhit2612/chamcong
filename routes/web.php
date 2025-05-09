@@ -49,6 +49,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/attendance/status', [AttendanceController::class, 'status'])->name('attendance.status');
     //Get lịch sử chấm công
     Route::get('/attendance-history', [AttendanceController::class, 'getAttendanceHistory']);
+    //Tải xuống lịch sử chấm công
+    Route::get('/admin/attendance/export', [AttendanceController::class, 'exportExcel'])->name('attendance.export.excel');
+
 
 
 });

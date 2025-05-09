@@ -39,7 +39,7 @@
             </button>
         </div>
         <div>
-            <button class="btn w-full py-3 shadow-md bg-orange-500 text-white rounded-lg" data-bs-toggle="modal" data-bs-target="#otModal">
+            <button class="btn w-full py-3 shadow-md bg-orange-500 text-white rounded-lg" data-bs-toggle="modal" data-bs-target="#otRequestModal">
                 <i class="bi bi-clock-history text-3xl block"></i> Xin OT
             </button>
         </div>
@@ -67,12 +67,71 @@
 
     {{-- Các Modal giữ nguyên như bạn đã viết ở trên (có thể thêm border-radius + padding nếu cần) --}}
 
+    <!-- Modal for OT Request -->
+    <div class="modal fade" id="otRequestModal" tabindex="-1" aria-labelledby="otRequestModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="otRequestModalLabel">Xin Làm Thêm Giờ (OT)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form for submitting OT request -->
+                    <form id="otRequestForm">
+                        <div class="mb-3">
+                            <label for="otDate" class="form-label">Ngày</label>
+                            <input type="date" class="form-control" id="otDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="otHours" class="form-label">Số Giờ OT</label>
+                            <input type="number" class="form-control" id="otHours" required min="1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="otReason" class="form-label">Lý Do</label>
+                            <textarea class="form-control" id="otReason" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="otStatus" class="form-label">Trạng Thái</label>
+                            <select class="form-select" id="otStatus" required>
+                                <option value="pending">Đang Chờ</option>
+                                <option value="approved">Đã Phê Duyệt</option>
+                                <option value="rejected">Từ Chối</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Gửi Yêu Cầu</button>
+                    </form>
+
+                    <!-- Table to display OT requests history -->
+                    <h4 class="mt-4">Lịch Sử Yêu Cầu OT</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Ngày</th>
+                                <th>Số Giờ OT</th>
+                                <th>Lý Do</th>
+                                <th>Trạng Thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="otHistoryBody">
+                            <!-- Data will be injected here dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <!-- Modal for Attendance History -->
     <div class="modal fade" id="attendanceHistoryModal" tabindex="-1" aria-labelledby="attendanceHistoryModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="attendanceHistoryModalLabel">Lịch Sử Chấm Công</h5>
+                    <a href="{{ route('attendance.export.excel') }}" class="btn btn-success btn-sm ms-3" target="_blank">
+                        Tải về Excel
+                    </a>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
