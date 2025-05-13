@@ -35,31 +35,31 @@
     <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-center max-w-7xl mx-auto">
         <div>
             <button class="btn w-full py-3 shadow-md bg-red-500 text-white rounded-lg" data-bs-toggle="modal" data-bs-target="#requestModal">
-                <i class="bi bi-calendar-x text-3xl block"></i> Xin Nghỉ
+                <i class="bi bi-calendar-x text-3xl block"></i> Xin Nghỉ/ Đi muộn
             </button>
         </div>
         <div>
-            <button class="btn w-full py-3 shadow-md bg-orange-500 text-white rounded-lg" data-bs-toggle="modal" data-bs-target="#otRequestModal">
+            <button class="btn w-full py-3 shadow-md bg-amber-500 text-white rounded-lg" data-bs-toggle="modal" data-bs-target="#otRequestModal">
                 <i class="bi bi-clock-history text-3xl block"></i> Xin OT
             </button>
         </div>
-        <div>
-            <button class="btn w-full py-3 shadow-md bg-lime-500 text-white rounded-lg" data-bs-toggle="modal" data-bs-target="#leaveBalanceModal">
-                <i class="bi bi-clipboard-check text-3xl block"></i> Ngày Phép Còn
+        <!-- <div>
+            <button class="btn w-full py-3 shadow-md bg-amber-500 text-white rounded-lg" data-bs-toggle="modal" data-bs-target="#leaveBalanceModal">
+                <i class="bi bi-clipboard-check text-3xl block"></i> Lịch sử công làm việc
             </button>
-        </div>
-        <div>
-            <button class="btn w-full py-3 shadow-md bg-blue-500 text-white rounded-lg" data-bs-toggle="modal" data-bs-target="#requestListModal">
+        </div> -->
+        <!-- <div>
+            <button class="btn w-full py-3 shadow-md bg-amber-500 text-white rounded-lg" data-bs-toggle="modal" data-bs-target="#requestListModal">
                 <i class="bi bi-journal-text text-3xl block"></i> Lịch Sử Nghỉ
             </button>
         </div>
         <div>
-            <button class="btn w-full py-3 shadow-md bg-blue-500 text-white rounded-lg" data-bs-toggle="modal" data-bs-target="#otHistoryModal">
+            <button class="btn w-full py-3 shadow-md bg-amber-500 text-white rounded-lg" data-bs-toggle="modal" data-bs-target="#otHistoryModal">
                 <i class="bi bi-clock text-3xl block"></i> Lịch Sử OT
             </button>
         </div>
-        <div>
-            <button class="btn w-full py-3 shadow-md bg-blue-500 text-white rounded-lg" data-bs-toggle="modal" data-bs-target="#attendanceHistoryModal">
+        <div> -->
+            <button class="btn w-full py-3 shadow-md bg-amber-500 text-white rounded-lg" data-bs-toggle="modal" data-bs-target="#attendanceHistoryModal">
                 <i class="bi bi-clock text-3xl block"></i> Lịch Sử Chấm Công
             </button>
         </div>
@@ -86,7 +86,6 @@
                                 <option value="leave">Nghỉ phép</option>
                                 <option value="late">Đi muộn</option>
                                 <option value="remote">Làm việc từ xa</option>
-                                <option value="ot">Tăng ca</option>
                             </select>
                         </div>
 
@@ -162,61 +161,57 @@
                             <input type="date" class="form-control" id="otDate" required>
                         </div>
                         <div class="mb-3">
-                            <label for="otHours" class="form-label">Số Giờ OT</label>
-                            <input type="number" class="form-control" id="otHours" required min="1">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="otStartTime" class="form-label">Từ</label>
+                                    <input type="time" class="form-control" id="otStartTime" required>
+                                </div>
+                                <div class="col">
+                                    <label for="otEndTime" class="form-label">Đến</label>
+                                    <input type="time" class="form-control" id="otEndTime" required>
+                                </div>
+                            </div>
                         </div>
+                        <div class="mb-3">
+                            <label for="otHours" class="form-label">Tổng Số Giờ OT</label>
+                            <input type="number" class="form-control" id="otHours" readonly>
+                        </div>
+
                         <div class="mb-3">
                             <label for="otReason" class="form-label">Lý Do</label>
                             <textarea class="form-control" id="otReason" rows="3" required></textarea>
                         </div>
-                        <div class="mb-3">
-                            <label for="otStatus" class="form-label">Trạng Thái</label>
-                            <select class="form-select" id="otStatus" required>
-                                <option value="pending">Đang Chờ</option>
-                                <option value="approved">Đã Phê Duyệt</option>
-                                <option value="rejected">Từ Chối</option>
-                            </select>
-                        </div>
                         <button type="submit" class="btn btn-primary">Gửi Yêu Cầu</button>
                     </form>
-
-                    <!-- Table to display OT requests history -->
-                    <h4 class="mt-4">Lịch Sử Yêu Cầu OT</h4>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Ngày</th>
-                                <th>Số Giờ OT</th>
-                                <th>Lý Do</th>
-                                <th>Trạng Thái</th>
-                            </tr>
-                        </thead>
-                        <tbody id="otHistoryBody">
-                            <!-- Data will be injected here dynamically -->
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
     </div>
-
 
     <!-- Modal for Attendance History -->
     <div class="modal fade" id="attendanceHistoryModal" tabindex="-1" aria-labelledby="attendanceHistoryModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="attendanceHistoryModalLabel">Lịch Sử Chấm Công</h5>
+                    <h5 class="modal-title" id="attendanceHistoryModalLabel">Lịch Sử</h5>
+
+                    <select id="historyTypeSelector" class="form-select form-select-sm w-auto ms-3">
+                        <option value="attendance">Chấm Công</option>
+                        <option value="ot">Làm Thêm Giờ (OT)</option>
+                        <option value="leave">Nghỉ Phép</option>
+                    </select>
+
                     <a href="{{ route('attendance.export.excel') }}" class="btn btn-success btn-sm ms-3" target="_blank">
                         Tải về Excel
                     </a>
+
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+
                 <div class="modal-body">
                     <!-- Table to display attendance history -->
                     <table class="table table-bordered">
-                        <thead>
+                        <thead id="attendanceHistoryHeader">
                             <tr>
                                 <th>#</th>
                                 <th>Ngày</th>
@@ -375,44 +370,238 @@
 
 <!-- Phần này là Script của Modal !-->
 <script>
-    // Lấy lịch sử chấm công khi modal mở
+    const USER_ROLE = "{{ auth()->user()->role }}"; // ví dụ: 'admin', 'gd', 'nhanvien'
+    // Khi mở modal, tự động gọi theo mặc định (chấm công)
     $('#attendanceHistoryModal').on('show.bs.modal', function () {
-        // Gửi request AJAX tới API để lấy lịch sử chấm công
+        loadHistory('attendance');
+    });
+
+    // Khi thay đổi loại lịch sử (Chấm công / OT / Nghỉ phép)
+    $('#historyTypeSelector').on('change', function () {
+        const type = $(this).val();
+        loadHistory(type);
+    });
+
+    function loadHistory(type) {
         $.ajax({
-            url: '/attendance-history',
+            url: '/history-data',
             method: 'GET',
+            data: { type: type },
             success: function(response) {
-                let attendanceHistoryBody = $('#attendanceHistoryBody');
-                attendanceHistoryBody.empty(); // Clear the table before populating
+                let tbody = $('#attendanceHistoryBody');
+                let thead = $('#attendanceHistoryHeader'); // Tham chiếu đến phần thead
+                tbody.empty();
 
-                // Nếu có dữ liệu lịch sử chấm công
-                if (response.length > 0) {
-                    response.forEach((attendance, index) => {
-                        let status = attendance.status === 'checked_in' ? 'Chưa chấm công khi ra về' : 'Đã chấm công đủ';
-                        let checkedOutAt = attendance.checked_out_at ? attendance.checked_out_at : 'N/A';
+                // Thay đổi thead theo từng loại dữ liệu
+                if (type === 'attendance') {
+                    thead.html(`
+                        <tr>
+                            <th>#</th>
+                            <th>Ngày</th>
+                            <th>Trạng Thái</th>
+                            <th>Giờ Chấm Công</th>
+                            <th>Giờ Rời Công Ty</th>
+                        </tr>
+                    `);
+                    // Render dữ liệu cho 'attendance'
+                    if (!response || response.length === 0) {
+                        tbody.append(`
+                            <tr>
+                                <td colspan="5" class="text-center">Không có dữ liệu chấm công.</td>
+                            </tr>
+                        `);
+                        return;
+                    }
 
-                        // Thêm dữ liệu vào bảng
-                        attendanceHistoryBody.append(`
+                    response.forEach((item, index) => {
+                        let status = item.status === 'checked_in' ? 'Chưa chấm công khi ra về' : 'Đã chấm công đủ';
+                        let checkedOutAt = item.checked_out_at || 'N/A';
+
+                        tbody.append(`
                             <tr>
                                 <td>${index + 1}</td>
-                                <td>${attendance.checked_in_at}</td>
+                                <td>${item.checked_in_at}</td>
                                 <td>${status}</td>
-                                <td>${attendance.checked_in_at}</td>
+                                <td>${item.checked_in_at}</td>
                                 <td>${checkedOutAt}</td>
                             </tr>
                         `);
                     });
-                } else {
-                    attendanceHistoryBody.append(`
+                } else if (type === 'ot') {
+                    thead.html(`
                         <tr>
-                            <td colspan="6" class="text-center">Chưa có lịch sử chấm công.</td>
+                            <th>#</th>
+                            <th>Ngày</th>
+                            <th>Giờ Bắt Đầu</th>
+                            <th>Giờ Kết Thúc</th>
+                            <th>Số Giờ</th>
+                            <th>Lý Do</th>
                         </tr>
                     `);
+                    // Render dữ liệu cho 'ot'
+                    if (!response || response.length === 0) {
+                        tbody.append(`
+                            <tr>
+                                <td colspan="6" class="text-center">Không có dữ liệu làm thêm.</td>
+                            </tr>
+                        `);
+                        return;
+                    }
+
+                    response.forEach((item, index) => {
+                        tbody.append(`
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${item.ot_date}</td>
+                                <td>${item.ot_start_time}</td>
+                                <td>${item.ot_end_time}</td>
+                                <td>${item.ot_hours}</td>
+                                <td>${item.ot_reason || ''}</td>
+                            </tr>
+                        `);
+                    });
+                } else if (type === 'leave') {
+                    thead.html(`
+                        <tr>
+                            <th>#</th>
+                            <th>Ngày</th>
+                            <th>Lý Do Nghỉ</th>
+                        </tr>
+                    `);
+                    // Render dữ liệu cho 'leave'
+                    if (!response || response.length === 0) {
+                        tbody.append(`
+                            <tr>
+                                <td colspan="3" class="text-center">Không có dữ liệu nghỉ phép.</td>
+                            </tr>
+                        `);
+                        return;
+                    }
+
+                    response.forEach((item, index) => {
+                        tbody.append(`
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${item.date}</td>
+                                <td colspan="2">Lý do nghỉ: ${item.reason}</td>
+                            </tr>
+                        `);
+                    });
                 }
             },
             error: function(error) {
-                console.log('Lỗi khi tải lịch sử chấm công:', error);
+                console.error('Lỗi khi tải lịch sử:', error);
             }
         });
+    }
+
+
+    function getLabel(type) {
+        switch (type) {
+            case 'ot': return 'làm thêm giờ (OT)';
+            case 'leave': return 'nghỉ phép';
+            default: return 'chấm công';
+        }
+    }
+</script>
+
+
+<!-- Tự tính số giờ OT !-->
+<script>
+    const startTimeInput = document.getElementById('otStartTime');
+    const endTimeInput = document.getElementById('otEndTime');
+    const otHoursInput = document.getElementById('otHours');
+
+    function calculateOTHours() {
+        const startTime = startTimeInput.value;
+        const endTime = endTimeInput.value;
+
+        if (startTime && endTime) {
+            const [startHour, startMinute] = startTime.split(':').map(Number);
+            const [endHour, endMinute] = endTime.split(':').map(Number);
+
+            let start = new Date();
+            let end = new Date();
+            start.setHours(startHour, startMinute, 0);
+            end.setHours(endHour, endMinute, 0);
+
+            let diffMs = end - start;
+
+            if (diffMs > 0) {
+                const diffHours = diffMs / (1000 * 60 * 60);
+                otHoursInput.value = diffHours.toFixed(2); // giữ 2 số thập phân
+            } else {
+                otHoursInput.value = '';
+            }
+        }
+    }
+
+    startTimeInput.addEventListener('input', calculateOTHours);
+    endTimeInput.addEventListener('input', calculateOTHours);
+</script>
+
+
+<!-- Modal Xin OT!--> 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const startTimeInput = document.getElementById('otStartTime');
+    const endTimeInput = document.getElementById('otEndTime');
+    const hoursInput = document.getElementById('otHours');
+
+    function calculateHours() {
+        const start = startTimeInput.value;
+        const end = endTimeInput.value;
+
+        if (start && end) {
+            const startDate = new Date(`1970-01-01T${start}`);
+            const endDate = new Date(`1970-01-01T${end}`);
+            let diff = (endDate - startDate) / (1000 * 60 * 60);
+
+            if (diff < 0) {
+                diff += 24; // support overnight OT
+            }
+
+            hoursInput.value = diff.toFixed(2);
+        }
+    }
+
+    startTimeInput.addEventListener('change', calculateHours);
+    endTimeInput.addEventListener('change', calculateHours);
+
+    // Handle form submission
+    document.getElementById('otRequestForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const formData = {
+            ot_date: document.getElementById('otDate').value,
+            ot_start_time: startTimeInput.value,
+            ot_end_time: endTimeInput.value,
+            ot_hours: hoursInput.value,
+            ot_reason: document.getElementById('otReason').value,
+        };
+
+        fetch("{{ route('ot-request.store') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json', // <- BẮT BUỘC THÊM DÒNG NÀY
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify(formData)
+        })
+
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message);
+            document.getElementById('otRequestForm').reset();
+            hoursInput.value = '';
+            const modal = bootstrap.Modal.getInstance(document.getElementById('otRequestModal'));
+            modal.hide();
+        })
+        .catch(err => {
+            alert("Đã xảy ra lỗi khi gửi yêu cầu OT.");
+            console.error(err);
+        });
     });
+});
 </script>

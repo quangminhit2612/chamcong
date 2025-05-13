@@ -6,7 +6,7 @@ use App\Models\Request as LeaveRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class RequestController extends Controller
+class LeaveRequestController extends Controller
 {
 
     public function dashboard()
@@ -42,7 +42,7 @@ class RequestController extends Controller
 
         return view('dashboard', compact('requests'));
     }
-    
+
     public function index()
     {
         $requests = LeaveRequest::with('user')->orderByDesc('created_at')->get();
