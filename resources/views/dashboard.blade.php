@@ -60,7 +60,7 @@
         </div>
         <div> -->
             <button class="btn w-full py-3 shadow-md bg-amber-500 text-white rounded-lg" data-bs-toggle="modal" data-bs-target="#attendanceHistoryModal">
-                <i class="bi bi-clock text-3xl block"></i> Lịch Sử Chấm Công
+                <i class="bi bi-clock text-3xl block"></i> Lịch sử làm việc
             </button>
         </div>
     </div>
@@ -197,11 +197,11 @@
 
                     <select id="historyTypeSelector" class="form-select form-select-sm w-auto ms-3">
                         <option value="attendance">Chấm Công</option>
-                        <option value="ot">Làm Thêm Giờ (OT)</option>
-                        <option value="leave">Nghỉ Phép</option>
+                        <option value="leave">Xin nghỉ</option>
+                        <option value="ot">Làm Thêm Giờ</option>
                     </select>
 
-                    <a href="{{ route('attendance.export.excel') }}" class="btn btn-success btn-sm ms-3" target="_blank">
+                    <a id="downloadBtn" class="btn btn-success btn-sm ms-3" href="#" target="_blank">
                         Tải về Excel
                     </a>
 
@@ -210,7 +210,7 @@
 
                 <div class="modal-body">
                     <!-- Table to display attendance history -->
-                    <table class="table table-bordered">
+                    <table class="table table-bordered" id="attendanceHistoryTable">
                         <thead id="attendanceHistoryHeader">
                             <tr>
                                 <th>#</th>
@@ -388,11 +388,19 @@
             method: 'GET',
             data: { type: type },
             success: function(response) {
-                let tbody = $('#attendanceHistoryBody');
-                let thead = $('#attendanceHistoryHeader'); // Tham chiếu đến phần thead
+                const thead = $('#attendanceHistoryHeader');
+                const tbody = $('#attendanceHistoryBody');
+
+                // Hủy DataTable nếu đã được khởi tạo trước đó
+                if ($.fn.DataTable.isDataTable('#attendanceHistoryTable')) {
+                    $('#attendanceHistoryTable').DataTable().destroy();
+                }
+
+                // Xóa nội dung cũ
+                thead.empty();
                 tbody.empty();
 
-                // Thay đổi thead theo từng loại dữ liệu
+                // Xử lý từng loại
                 if (type === 'attendance') {
                     thead.html(`
                         <tr>
@@ -403,30 +411,25 @@
                             <th>Giờ Rời Công Ty</th>
                         </tr>
                     `);
-                    // Render dữ liệu cho 'attendance'
+
                     if (!response || response.length === 0) {
-                        tbody.append(`
-                            <tr>
-                                <td colspan="5" class="text-center">Không có dữ liệu chấm công.</td>
-                            </tr>
-                        `);
-                        return;
+                        tbody.append(`<tr><td colspan="5" class="text-center">Không có dữ liệu chấm công.</td></tr>`);
+                    } else {
+                        response.forEach((item, index) => {
+                            let status = item.status === 'checked_in' ? 'Chưa chấm công khi ra về' : 'Đã chấm công đủ';
+                            let checkedOutAt = item.checked_out_at || 'N/A';
+                            tbody.append(`
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${item.checked_in_at}</td>
+                                    <td>${status}</td>
+                                    <td>${item.checked_in_at}</td>
+                                    <td>${checkedOutAt}</td>
+                                </tr>
+                            `);
+                        });
                     }
 
-                    response.forEach((item, index) => {
-                        let status = item.status === 'checked_in' ? 'Chưa chấm công khi ra về' : 'Đã chấm công đủ';
-                        let checkedOutAt = item.checked_out_at || 'N/A';
-
-                        tbody.append(`
-                            <tr>
-                                <td>${index + 1}</td>
-                                <td>${item.checked_in_at}</td>
-                                <td>${status}</td>
-                                <td>${item.checked_in_at}</td>
-                                <td>${checkedOutAt}</td>
-                            </tr>
-                        `);
-                    });
                 } else if (type === 'ot') {
                     thead.html(`
                         <tr>
@@ -438,28 +441,24 @@
                             <th>Lý Do</th>
                         </tr>
                     `);
-                    // Render dữ liệu cho 'ot'
+
                     if (!response || response.length === 0) {
-                        tbody.append(`
-                            <tr>
-                                <td colspan="6" class="text-center">Không có dữ liệu làm thêm.</td>
-                            </tr>
-                        `);
-                        return;
+                        tbody.append(`<tr><td colspan="6" class="text-center">Không có dữ liệu làm thêm.</td></tr>`);
+                    } else {
+                        response.forEach((item, index) => {
+                            tbody.append(`
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${item.ot_date}</td>
+                                    <td>${item.ot_start_time}</td>
+                                    <td>${item.ot_end_time}</td>
+                                    <td>${item.ot_hours}</td>
+                                    <td>${item.ot_reason || ''}</td>
+                                </tr>
+                            `);
+                        });
                     }
 
-                    response.forEach((item, index) => {
-                        tbody.append(`
-                            <tr>
-                                <td>${index + 1}</td>
-                                <td>${item.ot_date}</td>
-                                <td>${item.ot_start_time}</td>
-                                <td>${item.ot_end_time}</td>
-                                <td>${item.ot_hours}</td>
-                                <td>${item.ot_reason || ''}</td>
-                            </tr>
-                        `);
-                    });
                 } else if (type === 'leave') {
                     thead.html(`
                         <tr>
@@ -468,33 +467,45 @@
                             <th>Lý Do Nghỉ</th>
                         </tr>
                     `);
-                    // Render dữ liệu cho 'leave'
-                    if (!response || response.length === 0) {
-                        tbody.append(`
-                            <tr>
-                                <td colspan="3" class="text-center">Không có dữ liệu nghỉ phép.</td>
-                            </tr>
-                        `);
-                        return;
-                    }
 
-                    response.forEach((item, index) => {
-                        tbody.append(`
-                            <tr>
-                                <td>${index + 1}</td>
-                                <td>${item.date}</td>
-                                <td colspan="2">Lý do nghỉ: ${item.reason}</td>
-                            </tr>
-                        `);
-                    });
+                    if (!response || response.length === 0) {
+                        tbody.append(`<tr><td colspan="3" class="text-center">Không có dữ liệu nghỉ phép.</td></tr>`);
+                    } else {
+                        response.forEach((item, index) => {
+                            tbody.append(`
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${item.date}</td>
+                                    <td colspan="2">${item.reason}</td>
+                                </tr>
+                            `);
+                        });
+                    }
                 }
+
+                // Khởi tạo lại DataTable sau khi dữ liệu đã sẵn sàng
+                $('#attendanceHistoryTable').DataTable({
+                    pageLength: 10,
+                    destroy: true,
+                    language: {
+                        search: "Tìm kiếm:",
+                        lengthMenu: "Hiển thị _MENU_ dòng",
+                        info: "Hiển thị _START_ đến _END_ của _TOTAL_ dòng",
+                        paginate: {
+                            first: "Đầu",
+                            last: "Cuối",
+                            next: "→",
+                            previous: "←"
+                        },
+                        zeroRecords: "Không tìm thấy dữ liệu phù hợp",
+                    }
+                });
             },
             error: function(error) {
                 console.error('Lỗi khi tải lịch sử:', error);
             }
         });
     }
-
 
     function getLabel(type) {
         switch (type) {
@@ -604,4 +615,45 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+</script>
+
+
+<!-- Tải excel !-->
+<script>
+    // Lắng nghe sự kiện khi chọn loại lịch sử
+    document.getElementById('historyTypeSelector').addEventListener('change', function() {
+        // Lấy giá trị của select
+        var historyType = this.value;
+
+        // Lấy nút tải về
+        var downloadBtn = document.getElementById('downloadBtn');
+
+        // Cập nhật href của nút tải về với giá trị lịch sử được chọn
+        downloadBtn.href = '{{ route('attendance.export.excel') }}?history_type=' + historyType;
+    });
+
+    // Mặc định gán giá trị của select khi trang tải
+    document.addEventListener('DOMContentLoaded', function() {
+        var historyType = document.getElementById('historyTypeSelector').value;
+        document.getElementById('downloadBtn').href = '{{ route('attendance.export.excel') }}?history_type=' + historyType;
+    });
+</script>
+
+<script>
+    $('#attendanceHistoryTable').DataTable({
+        destroy: true, // Cho phép khởi tạo lại nếu bảng đã được DataTables hóa
+        pageLength: 10,
+        language: {
+            search: "Tìm kiếm:",
+            lengthMenu: "Hiển thị _MENU_ dòng",
+            info: "Hiển thị _START_ đến _END_ trong _TOTAL_ dòng",
+            paginate: {
+                first: "Đầu",
+                last: "Cuối",
+                next: "→",
+                previous: "←"
+            },
+            zeroRecords: "Không tìm thấy dữ liệu",
+        }
+    });
 </script>

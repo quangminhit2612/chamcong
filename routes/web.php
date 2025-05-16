@@ -7,6 +7,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\OtRequestController;
 use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\AdminController;
 
 
 /*
@@ -58,8 +59,7 @@ Route::middleware('auth')->group(function () {
 
     //History with type
     Route::get('/history-data', [HistoryController::class, 'get']);
-    
-
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin.panel');
 
 });
 

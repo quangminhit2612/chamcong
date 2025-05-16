@@ -12,21 +12,32 @@ class HistoryController extends Controller
     public function get(HttpRequest $request)
     {
         $type = $request->query('type', 'attendance');
-        $userId = auth()->id();
+        $user = auth()->user();
+        $isAdminOrGD = in_array(strtolower($user->role), ['admin', 'gd']);
 
         switch ($type) {
             case 'ot':
-                // Trả về dữ liệu overtime cho người dùng
-                return OtRequest::where('user_id', $userId)
-                    ->latest()
-                    ->get(['ot_date', 'ot_start_time','ot_hours','ot_end_time', 'ot_reason']); // Lọc chỉ những cột cần thiết
+                $query = OtRequest::query();
+                if (!$isAdminOrGD) {
+                    $query->where('user_id', $user->id);
+                }
+                return $query->latest()->get();
 
             case 'leave':
-                return LeaveRequest::where('user_id', $userId)->latest()->get(); 
+                $query = LeaveRequest::query();
+                if (!$isAdminOrGD) {
+                    $query->where('user_id', $user->id);
+                }
+                return $query->latest()->get();
 
             case 'attendance':
             default:
-                return Attendance::where('user_id', $userId)->latest()->get();
+                $query = Attendance::query();
+                if (!$isAdminOrGD) {
+                    $query->where('user_id', $user->id);
+                }
+                return $query->latest()->get();
         }
     }
+
 }

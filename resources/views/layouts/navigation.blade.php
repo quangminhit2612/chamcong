@@ -16,6 +16,15 @@
                         {{ __('Trang chủ') }}
                     </x-nav-link>
                 </div>
+                @auth
+                @if (auth()->user()->role === 'gd')
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('admin.panel')" :active="request()->routeIs('admin.panel')">
+                        {{ __('Quản trị') }}
+                    </x-nav-link>
+                </div>
+                @endif
+                @endauth
             </div>
 
             <!-- Settings Dropdown -->
@@ -71,6 +80,14 @@
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
         </div>
+        @auth
+        @if (auth()->user()->role === 'gd')
+        <x-responsive-nav-link :href="route('admin.panel')" :active="request()->routeIs('admin.panel')">
+            {{ __('Quản trị') }}
+        </x-responsive-nav-link>
+        @endif
+        @endauth
+
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">

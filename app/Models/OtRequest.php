@@ -13,5 +13,10 @@ class OtRequest extends Model
         'ot_end_time',
         'ot_hours',
         'ot_reason',
-    ];    
+    ];
+    
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }    
 }

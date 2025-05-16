@@ -7,6 +7,8 @@ use App\Models\Attendance;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\AttendanceExport;
+use App\Exports\LeaveExport;
+use App\Exports\OTExport;
 
 class AttendanceController extends Controller
 {
@@ -19,7 +21,7 @@ class AttendanceController extends Controller
 
         // Chặn nếu IP không nằm trong dải 104.28.205.xxx
         if (
-            $userIp !== '14.241.100.219' &&
+            $userIp !== '127.0.0.1' &&
             !str_starts_with($userIp, '104.28.')
         ) {
             return response()->json([], 403);
@@ -98,14 +100,23 @@ class AttendanceController extends Controller
         return response()->json($attendances);
     }
 
-    public function exportExcel()
+    public function exportExcel(Request $request)
     {
-        // Kiểm tra nếu người dùng là Admin hoặc Giám đốc
-        if (in_array(strtolower(auth()->user()->role), ['admin', 'gd'])) {
-            return Excel::download(new AttendanceExport, 'lich-su-cham-cong.xlsx');
-        } else {
-            // Nếu không phải admin hoặc giám đốc, trả về thông báo lỗi hoặc redirect
+        $type = $request->input('history_type');  // Nhận giá trị từ select
+
+        if (!in_array(strtolower(auth()->user()->role), ['admin', 'gd'])) {
             return redirect()->back()->with('error', 'Bạn không có quyền truy cập chức năng này.');
         }
+
+        switch ($type) {
+            case 'leave':
+                return Excel::download(new LeaveExport, 'don-xin-nghi.xlsx');
+            case 'ot':
+                return Excel::download(new OTExport, 'lam-them-gio.xlsx');
+            case 'attendance':
+            default:
+                return Excel::download(new AttendanceExport, 'lich-su-cham-cong.xlsx');
+        }
     }
+    
 }

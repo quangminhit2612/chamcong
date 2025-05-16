@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Request as LeaveRequest;
+use App\Models\LeaveRequest as LeaveRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 

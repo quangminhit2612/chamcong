@@ -5,12 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Request extends Model
+class LeaveRequest extends Model
 {
     use HasFactory;
 
+    protected $table = 'requests';
+
     protected $fillable = [
-        'user_id', 'type', 'reason', 'date', 'status', 'approver_id', 'approved_at'
+        'user_id', 'type', 'reason', 'status', 'approver_id', 'approved_at'
+    ];
+
+    protected $casts = [
+        'date' => 'datetime',
     ];
 
     public function user()
