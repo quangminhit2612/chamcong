@@ -6,9 +6,127 @@
     </x-slot>
 
     <div class="py-6 px-4 max-w-7xl mx-auto space-y-8">
+
+        <!-- BẢNG NGHỈ PHÉP & OT -->
+        <div class="bg-white p-6 rounded shadow">
+            <h3 class="text-lg font-bold mb-4">1. Danh sách xin nghỉ & làm thêm (OT)</h3>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Nghỉ phép -->
+                <div>
+                    <h4 class="font-semibold mb-2">Xin nghỉ</h4>
+                    @if($leaves->count() > 0)
+                    <table id="leaveTable" class="w-full text-sm border">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-3 py-2 border">#</th>
+                                <th class="px-3 py-2 border">Tên</th>
+                                <th class="px-3 py-2 border">Ngày</th>
+                                <th class="px-3 py-2 border">Lý do</th>
+                                <th class="px-3 py-2 border">Trạng thái</th>
+                                <th class="px-3 py-2 border">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($leaves as $index => $leave)
+                                <tr>
+                                    <td class="px-3 py-2 border">{{ $index + 1 }}</td>
+                                    <td class="px-3 py-2 border">{{ $leave->user->name }}</td>
+                                    <td class="px-3 py-2 border">{{ $leave->date->format('d-m-Y') }}</td>
+                                    <td class="px-3 py-2 border">{{ $leave->reason }}</td>
+                                    <td class="px-3 py-2 border">
+                                        @if ($leave->status === 'approved')
+                                            <span class="text-green-600 font-semibold">Đã duyệt</span>
+                                        @elseif ($leave->status === 'rejected')
+                                            <span class="text-red-600 font-semibold">Từ chối</span>
+                                        @else
+                                            <span class="text-yellow-600 font-semibold">Chờ duyệt</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-3 py-2 border">
+                                        @if ($leave->status === 'pending')
+                                            <form method="POST" action="{{ route('requests.approve', $leave->id) }}">
+                                                @csrf
+                                                <button type="submit" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
+                                                    Duyệt
+                                                </button>
+                                            </form>
+                                        @else
+                                            <span class="text-gray-400">--</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center py-3">Không có đơn nghỉ phép nào.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+
+                    @endif
+                </div>
+
+                <!-- OT -->
+                <div>
+                    <h4 class="font-semibold mb-2">Làm thêm (OT)</h4>
+                    @if($ots->count() > 0)
+                    <table id="otTable" class="w-full text-sm border">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-3 py-2 border">#</th>
+                                <th class="px-3 py-2 border">Tên</th>
+                                <th class="px-3 py-2 border">Ngày</th>
+                                <th class="px-3 py-2 border">Giờ bắt đầu</th>
+                                <th class="px-3 py-2 border">Giờ kết thúc</th>
+                                <th class="px-3 py-2 border">Trạng thái</th>
+                                <th class="px-3 py-2 border">Thao tác</th> {{-- Thêm cột hành động --}}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($ots as $index => $item)
+                                <tr>
+                                    <td class="px-3 py-2 border">{{ $index + 1 }}</td>
+                                    <td class="px-3 py-2 border">{{ $item->user->name }}</td>
+                                    <td class="px-3 py-2 border">{{ $item->ot_date ? \Carbon\Carbon::parse($item->ot_date)->format('d-m-Y') : 'N/A' }}</td>
+                                    <td class="px-3 py-2 border">{{ \Carbon\Carbon::parse($item->ot_start_time)->format('H:i') }}</td>
+                                    <td class="px-3 py-2 border">{{ \Carbon\Carbon::parse($item->ot_end_time)->format('H:i') }}</td>
+                                    <td class="px-3 py-2 border">
+                                        @if($item->status === 'pending')
+                                            <span class="text-yellow-600 font-semibold">Chờ duyệt</span>
+                                        @elseif($item->status === 'approved')
+                                            <span class="text-green-600 font-semibold">Đã duyệt</span>
+                                        @else
+                                            {{ ucfirst($item->status) }}
+                                        @endif
+                                    </td>
+                                    <td class="px-3 py-2 border text-center">
+                                        @if($item->status === 'pending')
+                                            <form action="{{ route('ot.approve', $item->id) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 text-sm rounded">
+                                                    Duyệt
+                                                </button>
+                                            </form>
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="px-3 py-2 border text-center">Không có dữ liệu phù hợp.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                    @endif
+                </div>
+            </div>
+        </div>
         <!-- BẢNG CHẤM CÔNG NHÂN VIÊN -->
         <div class="bg-white p-6 rounded shadow">
-            <h3 class="text-lg font-bold mb-4">1. Danh sách chấm công nhân viên</h3>
+            <h3 class="text-lg font-bold mb-4">2. Danh sách chấm công nhân viên</h3>
 
             <form method="GET" class="mb-4 flex gap-4">
                 <!-- Chọn từ ngày -->
@@ -34,7 +152,7 @@
             </form>
 
 
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto" id="ot-results">
                 @if($attendances->count() > 0)
                     <table id="attendanceTable" class="min-w-full text-sm border">
                         <thead class="bg-gray-100">
@@ -65,79 +183,6 @@
                 @endif
             </div>
 
-        </div>
-
-        <!-- BẢNG NGHỈ PHÉP & OT -->
-        <div class="bg-white p-6 rounded shadow">
-            <h3 class="text-lg font-bold mb-4">2. Danh sách xin nghỉ & làm thêm (OT)</h3>
-
-            <div class="grid md:grid-cols-2 gap-6">
-                <!-- Nghỉ phép -->
-                <div>
-                    <h4 class="font-semibold mb-2">Xin nghỉ</h4>
-                    @if($leaves->count() > 0)
-                    <table id="leaveTable" class="w-full text-sm border">
-                        <thead class="bg-gray-100">
-                            <tr>
-                                <th class="px-3 py-2 border">#</th>
-                                <th class="px-3 py-2 border">Tên</th>
-                                <th class="px-3 py-2 border">Ngày</th>
-                                <th class="px-3 py-2 border">Lý do</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($leaves as $index => $leave)
-                                <tr>
-                                    <td class="px-3 py-2 border">{{ $index + 1 }}</td>
-                                    <td class="px-3 py-2 border">{{ $leave->user->name }}</td>
-                                    <td class="px-3 py-2 border">{{ $leave->date->format('d-m-Y') }}</td>
-                                    <td class="px-3 py-2 border">{{ $leave->reason }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="text-center py-3">Không có đơn nghỉ phép nào.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                    @endif
-                </div>
-
-                <!-- OT -->
-                <div>
-                    <h4 class="font-semibold mb-2">Làm thêm (OT)</h4>
-                    @if($ots->count() > 0)
-                    <table id="otTable" class="w-full text-sm border">
-                        <thead class="bg-gray-100">
-                            <tr>
-                                <th class="px-3 py-2 border">#</th>
-                                <th class="px-3 py-2 border">Tên</th>
-                                <th class="px-3 py-2 border">Ngày</th>
-                                <th class="px-3 py-2 border">Giờ bắt đầu</th>
-                                <th class="px-3 py-2 border">Giờ kết thúc</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($ots as $index => $item)
-                                <tr>
-                                    <td class="px-3 py-2 border">{{ $index + 1 }}</td>
-                                    <td class="px-3 py-2 border">{{ $item->user->name }}</td>
-                                    <td class="px-3 py-2 border">{{ $item->checked_in_at->format('d-m-Y') }}</td>
-                                    <td class="px-3 py-2 border">{{ $item->checked_in_at->format('H:i') }}</td>
-                                    <td class="px-3 py-2 border">{{ $item->checked_out_at ? $item->checked_out_at->format('H:i') : 'N/A' }}</td>
-                                    <td class="px-3 py-2 border">{{ $item->status === 'checked_in' ? 'Chưa chấm công ra' : 'Hoàn tất' }}</td>
-                                </tr>
-                            @empty
-                                <tr data-dt-row="0" data-dt-column="0">
-                                    <td colspan="6" class="px-3 py-2 border text-center">Không có dữ liệu phù hợp.</td>
-                                </tr>
-                            @endforelse
-
-                        </tbody>
-                    </table>
-                    @endif
-                </div>
-            </div>
         </div>
     </div>
 </x-app-layout>
@@ -191,3 +236,15 @@
     });
 </script>
 
+<!-- Trỏ con lăn chuột đúng vị trí !-->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('start_date') || urlParams.has('end_date') || urlParams.has('user_id')) {
+            const resultSection = document.getElementById('ot-results');
+            if (resultSection) {
+                resultSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    });
+</script>

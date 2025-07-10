@@ -24,4 +24,13 @@ class OtRequestController extends Controller
 
         return response()->json(['message' => 'Yêu cầu OT đã được gửi thành công!']);
     }
+
+    public function approve($id)
+    {
+        $ot = OtRequest::findOrFail($id);
+        $ot->status = 'approved';
+        $ot->save();
+
+        return back()->with('success', 'Đã duyệt đơn OT.');
+    }
 }

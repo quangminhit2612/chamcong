@@ -12,7 +12,7 @@ class LeaveRequest extends Model
     protected $table = 'requests';
 
     protected $fillable = [
-        'user_id', 'type', 'reason', 'status', 'approver_id', 'approved_at'
+        'user_id', 'type', 'reason', 'date', 'status', 'approver_id', 'approved_at'
     ];
 
     protected $casts = [

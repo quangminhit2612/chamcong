@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\OtRequestController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\PowerPanelController;
 
 
 /*
@@ -58,8 +59,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/ot-request', [OtRequestController::class, 'store'])->name('ot-request.store');
 
     //History with type
-    Route::get('/history-data', [HistoryController::class, 'get']);
+    Route::get('/history-data', [HistoryController::class, 'get'])->name('history.data');
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.panel');
+
+    //OT accept
+    Route::post('/ot/{id}/approve', [OtRequestController::class, 'approve'])->name('ot.approve');
+
+    //Quản lý điện
+    Route::get('/power-panel', [PowerPanelController::class, 'index'])->name('power.panel')->middleware('auth');
 
 });
 

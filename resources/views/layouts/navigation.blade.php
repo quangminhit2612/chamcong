@@ -16,17 +16,24 @@
                         {{ __('Trang chủ') }}
                     </x-nav-link>
                 </div>
+
                 @auth
-                @if (auth()->user()->role === 'gd')
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('admin.panel')" :active="request()->routeIs('admin.panel')">
-                        {{ __('Quản trị') }}
-                    </x-nav-link>
-                </div>
-                @endif
+                    @if (auth()->user()->role === 'gd')
+                        <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            <x-nav-link :href="route('admin.panel')" :active="request()->routeIs('admin.panel')">
+                                {{ __('Quản trị nhân sự') }}
+                            </x-nav-link>
+                        </div>
+                    @endif
+
+                    <!-- Quản lý điện: ai đăng nhập cũng thấy -->
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('power.panel')" :active="request()->routeIs('power.panel')">
+                            {{ __('Quản trị kinh doanh') }}
+                        </x-nav-link>
+                    </div>
                 @endauth
             </div>
-
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">

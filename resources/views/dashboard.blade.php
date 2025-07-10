@@ -85,6 +85,7 @@
                                 <option value="">-- Chọn loại đơn --</option>
                                 <option value="leave">Nghỉ phép</option>
                                 <option value="late">Đi muộn</option>
+                                <option value="late">Về sớm</option>
                                 <option value="remote">Làm việc từ xa</option>
                             </select>
                         </div>
@@ -384,7 +385,7 @@
 
     function loadHistory(type) {
         $.ajax({
-            url: '/history-data',
+            url: "{{ route('history.data') }}",
             method: 'GET',
             data: { type: type },
             success: function(response) {
@@ -402,19 +403,18 @@
 
                 // Xử lý từng loại
                 if (type === 'attendance') {
-                    thead.html(`
-                        <tr>
-                            <th>#</th>
-                            <th>Ngày</th>
-                            <th>Trạng Thái</th>
-                            <th>Giờ Chấm Công</th>
-                            <th>Giờ Rời Công Ty</th>
-                        </tr>
-                    `);
-
                     if (!response || response.length === 0) {
-                        tbody.append(`<tr><td colspan="5" class="text-center">Không có dữ liệu chấm công.</td></tr>`);
+                        tbody.append(`<p>Không có dữ liệu chấm công.</p>`);
                     } else {
+                        thead.html(`
+                            <tr>
+                                <th>#</th>
+                                <th>Ngày</th>
+                                <th>Trạng Thái</th>
+                                <th>Giờ Chấm Công</th>
+                                <th>Giờ Rời Công Ty</th>
+                            </tr>
+                        `);
                         response.forEach((item, index) => {
                             let status = item.status === 'checked_in' ? 'Chưa chấm công khi ra về' : 'Đã chấm công đủ';
                             let checkedOutAt = item.checked_out_at || 'N/A';
@@ -430,7 +430,8 @@
                         });
                     }
 
-                } else if (type === 'ot') {
+                } 
+                else if (type === 'ot') {
                     thead.html(`
                         <tr>
                             <th>#</th>
@@ -439,13 +440,24 @@
                             <th>Giờ Kết Thúc</th>
                             <th>Số Giờ</th>
                             <th>Lý Do</th>
+                            <th>Trạng Thái</th>
                         </tr>
                     `);
 
                     if (!response || response.length === 0) {
-                        tbody.append(`<tr><td colspan="6" class="text-center">Không có dữ liệu làm thêm.</td></tr>`);
+                        tbody.html(`<tr><td colspan="7" class="text-center py-3">Không có dữ liệu làm thêm.</td></tr>`);
                     } else {
                         response.forEach((item, index) => {
+                            // Xử lý trạng thái bằng tiếng Việt
+                            let statusText = '';
+                            if (item.status === 'approved') {
+                                statusText = 'Đã phê duyệt';
+                            } else if (item.status === 'pending') {
+                                statusText = 'Chờ duyệt';
+                            } else {
+                                statusText = 'Không xác định';
+                            }
+
                             tbody.append(`
                                 <tr>
                                     <td>${index + 1}</td>
@@ -454,29 +466,41 @@
                                     <td>${item.ot_end_time}</td>
                                     <td>${item.ot_hours}</td>
                                     <td>${item.ot_reason || ''}</td>
+                                    <td>${statusText}</td>
                                 </tr>
                             `);
                         });
                     }
-
-                } else if (type === 'leave') {
-                    thead.html(`
-                        <tr>
-                            <th>#</th>
-                            <th>Ngày</th>
-                            <th>Lý Do Nghỉ</th>
-                        </tr>
-                    `);
-
+                } 
+                else if (type === 'leave') {
                     if (!response || response.length === 0) {
-                        tbody.append(`<tr><td colspan="3" class="text-center">Không có dữ liệu nghỉ phép.</td></tr>`);
+                        tbody.append(`<tr><td colspan="4" class="text-center">Không có dữ liệu nghỉ phép.</td></tr>`);
                     } else {
+                        thead.html(`
+                            <tr>
+                                <th>#</th>
+                                <th>Ngày</th>
+                                <th>Lý Do Nghỉ</th>
+                                <th>Trạng Thái</th> <!-- Thêm cột trạng thái -->
+                            </tr>
+                        `);
                         response.forEach((item, index) => {
+                            // Kiểm tra trạng thái và hiển thị bằng tiếng Việt
+                            let statusText = '';
+                            if (item.status === 'approved') {
+                                statusText = 'Đã phê duyệt';
+                            } else if (item.status === 'pending') {
+                                statusText = 'Chờ duyệt';
+                            } else {
+                                statusText = 'Không xác định'; // Trường hợp không có trạng thái hoặc trạng thái lạ
+                            }
+
                             tbody.append(`
                                 <tr>
                                     <td>${index + 1}</td>
                                     <td>${item.date}</td>
-                                    <td colspan="2">${item.reason}</td>
+                                    <td>${item.reason}</td>
+                                    <td>${statusText}</td> <!-- Hiển thị trạng thái bằng tiếng Việt -->
                                 </tr>
                             `);
                         });
